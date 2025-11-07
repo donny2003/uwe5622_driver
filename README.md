@@ -6,10 +6,11 @@ uwe5622的内核驱动
 
 ~~买开发板之前一定要确认关键驱动有没有进内核主线~~
 
-by 2025-11-07 update 修改uwe5622源代码以适配6.1内核
+by 2025-11-07 update 修改uwe5622源代码以适配6.1内核，以下为手动修改日志
+#编译命令
+make ARCH=arm64 -C /lib/modules/$(uname -r)/build M=$PWD CONFIG_RK_WIFI_DEVICE_UWE5622=y CONFIG_WLAN_UWE5622=y CONFIG_TTY_OVERY_SDIO=y modules
 # 备份文件
 cp /root/uwe5622_driver/unisocwcn/platform/wcn_boot.c /root/uwe5622_driver/unisocwcn/platform/wcn_boot.c.backup
-
 # 编辑文件
 nano /root/uwe5622_driver/unisocwcn/platform/wcn_boot.c
 // 修改前：
@@ -97,14 +98,11 @@ memcpy(dev->dev_addr, vif->mac, ETH_ALEN);
 memcpy((void *)dev->dev_addr, vif->mac, ETH_ALEN);
 
 ==========================================================================
-
-# 最后的手段：强制编译，忽略未解析的符号（不推荐，但可以测试）
-# 注意：这可能会产生不稳定的驱动
+# 最后的手段：强制编译，忽略未解析的符号（不推荐，但可以测试）注意：这可能会产生不稳定的驱动
 make ARCH=arm64 -C /lib/modules/$(uname -r)/build M=$PWD CONFIG_RK_WIFI_DEVICE_UWE5622=y CONFIG_WLAN_UWE5622=y CONFIG_TTY_OVERY_SDIO=y modules_install
-
-
 ======================================================
-#sed -i '/case DEL_LUT_INDEX:/{n;n;s/case ADD_LUT_INDEX:/\/* fall through *\/\n&/}' /root/uwe5622_driver/unisocwifi/wl_intf.c
+#不建议执行，与下面的编辑文件二选一
+sed -i '/case DEL_LUT_INDEX:/{n;n;s/case ADD_LUT_INDEX:/\/* fall through *\/\n&/}' /root/uwe5622_driver/unisocwifi/wl_intf.c
 
 # 编辑文件
 nano /root/uwe5622_driver/unisocwifi/wl_intf.c
@@ -116,7 +114,7 @@ case ADD_LUT_INDEX:
     // ... 其他代码
     
 这个函数通常用于设置进程调度策略。我们可以修改驱动代码来避免使用它：
-bash
+==========================================================================
 # 查找使用 sched_setscheduler 的文件
 find /root/uwe5622_driver -name "*.c" -o -name "*.h" | xargs grep -l "sched_setscheduler" 2>/dev/null
 /root/uwe5622_driver/unisocwcn/usb/wcn_usb_rx_tx.c
