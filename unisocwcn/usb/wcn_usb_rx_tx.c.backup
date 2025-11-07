@@ -612,7 +612,7 @@ static int rx_copy_work_func(void *work)
 		struct sched_param param;
 
 		param.sched_priority = -20;
-// sched_setscheduler(current, SCHED_FIFO, &param);
+		sched_setscheduler(current, SCHED_FIFO, &param);
 	} while (0);
 
 	copy_kthread = (struct wcn_usb_copy_kthread *)work;
@@ -708,7 +708,7 @@ static int tx_copy_work_func(void *work)
 		struct sched_param param;
 
 		param.sched_priority = -20;
-// sched_setscheduler(current, SCHED_FIFO, &param);
+		sched_setscheduler(current, SCHED_FIFO, &param);
 	} while (0);
 
 	copy_kthread = (struct wcn_usb_copy_kthread *)work;
@@ -1389,7 +1389,7 @@ int wcn_usb_work_func(void *work)
 		struct sched_param param;
 
 		param.sched_priority = 1;
-// sched_setscheduler(current, SCHED_FIFO, &param);
+		sched_setscheduler(current, SCHED_FIFO, &param);
 	} while (0);
 #endif
 
